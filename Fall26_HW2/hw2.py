@@ -9,9 +9,10 @@ def norm_histogram(histogram):
     :param histogram: list 
     :return: list
     """
-    # please delete the "pass" below and your code starts here...
-    pass
+    total = sum(histogram)
+    prob_list = [cnt / total for cnt in histogram]
 
+    return prob_list
 
 def compute_j(histogram, bin_width, num_samples):
     """
@@ -22,8 +23,14 @@ def compute_j(histogram, bin_width, num_samples):
     :param num_samples: int
     :return: float
     """
-    # please delete the "pass" below and your code starts here...
-    pass
+    prob_list = norm_histogram(histogram)
+    p_hats = sum([p_hat ** 2 for p_hat in prob_list])
+    m = num_samples
+    w = bin_width
+
+    j = (2/((m-1)*w))-((m+1)/((m-1)*w))*p_hats
+
+    return j
 
 def sweep_n(data, min_val, max_val, min_bins, max_bins):
     """
@@ -46,8 +53,15 @@ def sweep_n(data, min_val, max_val, min_bins, max_bins):
     :param max_bins: int
     :return: list
     """
-    # please delete the "pass" below and your code starts here...
-    pass
+    j_values = []
+
+    for n in range(min_bins, max_bins+1):
+        cnts, _, _ = plt.hist(x=data, bins=n, range=(min_val, max_val))
+        bin_width = (max_val - min_val) / n
+        num_samples = len(data)
+        j_values.append(compute_j(cnts, bin_width, num_samples))
+    
+    return j_values
 
 def find_min(l):
     """
@@ -62,11 +76,15 @@ def find_min(l):
     :param l: list
     :return: dict: {int: float}
     """
-    # please delete the "pass" below and your code starts here...
-    pass
-
-
-
+    n_list = []
+    for i, val in enumerate(l):
+        n_list.append((i,val))
+    #sort based on pair[1] (value) attribute
+    sorted_n_list = sorted(n_list, key=lambda pair: pair[1])
+    #slice & switch to dict
+    three_min = dict(sorted_n_list[0:3])
+    
+    return three_min
 
 
 # ============================== P2 ==================================
@@ -85,9 +103,8 @@ def get_coordinates(data, each_dist):
     :param each_dist: str
     :return: (np.ndarray, np.ndarray)
     """
-    # Your code starts here...
-    pass
-
+    coords, _ = stats.probplot(data,dist=each_dist)
+    return coords
 
 def calculate_distance(x, y):
     # Part B
@@ -98,9 +115,11 @@ def calculate_distance(x, y):
     :param y: float
     :return: float
     """
-    # Your code starts here...
-    pass
+    avg = (x + y) / 2.0
+    distance = np.sqrt((x - avg)**2 + (y - avg)**2)
 
+    return distance
+    
 
 def find_dist(data):
     # Part B
@@ -110,8 +129,11 @@ def find_dist(data):
     :param data: dict: {str: float}
     :return: (str, float)
     """
-    # Your code starts here...
-    pass
+
+    best_pair = min(data.items(), key=lambda pair: pair[1])
+    
+    return best_pair 
+    
 
 
 def main(data_file):
@@ -142,15 +164,16 @@ if __name__ == "__main__":
     They will change when we test your code and you should be mindful of that.
     """
     print(find_min(js))
+
     ############### Uncomment for P2 #################
 
-    # for each_dataset in [
-    #     "sample_norm.csv",
-    #     "sample_expon.csv",
-    #     "sample_uniform.csv",
-    #     "sample_wald.csv",
-    #     "distA.csv",
-    #     "distB.csv",
-    #     "distC.csv",
-    # ]:
-    #     print(main(each_dataset))
+    for each_dataset in [
+        "sample_norm.csv",
+        "sample_expon.csv",
+        "sample_uniform.csv",
+        "sample_wald.csv",
+        "distA.csv",
+        "distB.csv",
+        "distC.csv",
+    ]:
+        print(main(each_dataset))
